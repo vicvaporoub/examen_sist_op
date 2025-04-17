@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysql-container:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: university
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  api:
+    build: ./back
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-container
+    restart: always
+
+  frontend:
+    build: ./front
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  mysql-data:
