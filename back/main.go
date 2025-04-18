@@ -15,7 +15,7 @@ func getAlumnos(db *sql.DB) ([]string, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer rows.Close() // Asegurarnos que los resultados de la consulta se cierren cuando la consulta acaba
 	var alumnos []string
 	for rows.Next() {
 		var name string
@@ -40,15 +40,15 @@ func studentHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	//DSN (Data Source Name) para conectarse a la base de datos sql
+	//DSN (Data Source Name) para conectarse a la base de datos
 	dsn := "root:root@tcp(mysql-container:3306)/university"
-	db, err := sql.Open("mysql", dsn)
+	db, err := sql.Open("mysql", dsn) //Intenta abrir una conexión con university
 
 	if err != nil {
 		panic(err)
 	}
 
-	defer db.Close()
+	defer db.Close() //Aqui cierra la conexión cuando termina el programa
 
 	//Verificar conexión
 	err = db.Ping()
@@ -59,17 +59,22 @@ func main() {
 
 	http.HandleFunc("/alumnos", func(w http.ResponseWriter, r *http.Request) {
 		// Cabeceras CORS
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Origin", "*") //Permite que cualquier origen pueda hacer solicitudes
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS") //Aqui ponemos que solicitudes están permitidas
+		//GET para poder pedir los datos al servidor 
+		//y Options es una petición que el navegador manda antes del GET para verificar si el servidor acepta ciertas reglas
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type") //
 
 		// Preflight
+		//r.Method dice que tipo de solicitud llegó al servidor, entonces si la solicitud que recibió es de tipo OPTIONS
+		//Manda un código 200 de Ok
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
 
 		studentHandler(db, w, r)
+		
 	})
 
 	// Iniciar el servidor
