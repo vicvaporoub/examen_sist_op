@@ -9,5 +9,5 @@ RUN wget https://github.com/godotengine/godot/releases/download/4.4-stable/Godot
     mv /usr/local/bin/Godot_v4.4-stable_linux.x86_64 /usr/local/bin/godot && \
     rm /tmp/godot.zip
 
-# Comando por defecto: ejecutar Godot sin GUI
+
 CMD ["godot", "--headless"]
